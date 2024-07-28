@@ -1,0 +1,120 @@
+﻿@model electrible.Models.User
+@{
+    ViewData["Title"] = "Signup";
+    Layout = "~/Views/Shared/_NewLayout.cshtml";
+}
+
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+
+    .topbar {
+        background-color: #28a745;
+    }
+
+        .topbar .container {
+            background-color: transparent; /* Override default container background */
+        }
+
+    .top-info {
+        color: #fff;
+    }
+
+        .top-info a {
+            color: #fff;
+            text-decoration: none;
+        }
+
+            .top-info a:hover {
+                text-decoration: underline;
+            }
+
+    .card {
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        margin-top: 80px;
+    }
+
+    .card-title {
+        font-size: 24px;
+        font-weight: bold;
+    }
+
+    .form-control {
+        border-radius: 5px;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+    }
+</style>
+
+    <h2>Signup</h2>
+    <form id="signupForm">
+        <div class="container mt-5">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h3 class="card-title text-center">Signup</h3>
+
+                            <div class="mb-3">
+                                <label for="Username" class="form-label">Username:</label>
+                                <input type="text" id="Username" name="username" class="form-control" />
+                            <span class="text-danger" id="usernameError"></span>
+                            </div>
+                        <div class="mb-3">
+                            <label for="Email" class="form-label">Email:</label>
+                            <input type="email" id="Email" name="email" class="form-control" />
+                            <span class="text-danger" id="emailError"></span>
+                        </div>
+                            <div class="mb-3">
+                                <label for="Password" class="form-label">Password:</label>
+                                <input type="password" id="Password" name="password" class="form-control" />
+                            <span class="text-danger" id="passwordError"></span>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block w-100 bg-success text-white">Signup</button>
+                            <div id="signupError" class="text-danger"></div>
+                        </div>
+                    <div class="text-center mt-3">
+                    <p>Already Have an Account?  <a href="@Url.Action("Login", "User")">Login Now</a></p>
+                     </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#signupForm').on('submit', function (e) {
+            e.preventDefault();
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("Signup", "User")',
+                data: $(this).serialize(),
+                success: function (response) {
+                    if (response.success) {
+                        alert('Signup successful!');
+                        window.location.href = "/User/Login";
+                    } else {
+                        if (response.message) {
+                            $('#signupError').text(response.message);
+                        } else {
+                            $('#signupError').text('Signup failed. Please check the inputs.');
+                        }
+                    }
+                },
+                error: function () {
+                    $('#signupError').text('An error occurred. Please try again.');
+                }
+            });
+        });
+    });
+</script>

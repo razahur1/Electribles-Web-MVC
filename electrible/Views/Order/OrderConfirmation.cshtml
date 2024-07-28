@@ -1,0 +1,54 @@
+﻿@model electrible.Models.Order
+
+@{
+    ViewData["Title"] = "Order Confirmation";
+    Layout = "~/Views/Shared/_NewLayout.cshtml";
+}
+
+<div class="container-fluid py-5" style="margin-top:60px">
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h3 class="card-title mb-0">Order Confirmation</h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-success" role="alert">
+                        <h4 class="alert-heading">Thank you for your order!</h4>
+                        <p>Your order has been successfully placed with the following details:</p>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <strong>Order ID:</strong>
+                        </div>
+                        <div class="col-6">
+                                @Model.OrderId
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <strong>Order Date:</strong>
+                        </div>
+                        <div class="col-6">
+                                @Model.OrderDate
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-6">
+                                <strong>Total Amount:</strong>
+                        </div>
+                        <div class="col-6">
+                                @Model.TotalAmount
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <a href="/" class="btn btn-success">Continue Shopping</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>

@@ -1,0 +1,83 @@
+﻿@model electrible.Models.Product
+
+@{
+    ViewBag.Title = "Edit Product";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Edit Product</h2>
+
+<form id="editForm" enctype="multipart/form-data">
+    <input type="hidden" name="ProductId" value="@Model.ProductId" />
+    <div class="form-group">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Description"></label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Price"></label>
+        <input asp-for="Price" class="form-control" />
+        <span asp-validation-for="Price" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Quantity"></label>
+        <input asp-for="Quantity" class="form-control" />
+        <span asp-validation-for="Quantity" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="CategoryId">Category</label>
+        <select name="CategoryId" class="form-control">
+            @foreach (var category in ViewBag.Categories)
+            {
+                <option value="@category.CategoryId"
+                        selected="@(Model.CategoryId == category.CategoryId)">
+                    @category.Name
+                </option>
+            }
+        </select>
+        <span asp-validation-for="CategoryId" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="ImageUrl" class="control-label">Current Image</label><br />
+        <img src="@Url.Content(Model.ImageUrl)" alt="Current Image" class="img-thumbnail" />
+    </div>
+    <!-- Hidden field to store the existing image URL -->
+    <input type="hidden" id="existingImageUrl" name="ExistingImageUrl" value="@Model.ImageUrl" />
+    <!-- File input for uploading new image -->
+    <div class="form-group">
+        <label asp-for="ImageUrl" class="control-label">New Image</label>
+        <input type="file" name="imageFile" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#editForm').on('submit', function (event) {
+            event.preventDefault();
+
+            var formData = new FormData(this);
+            $.ajax({
+                url: '@Url.Action("Edit", "Product")',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    if (response.success) {
+                        alert('Product updated successfully.');
+                        window.location.href = '@Url.Action("Index", "Product")';
+                    } else {
+                        alert('Error: ' + response.errors.join(', '));
+                    }
+                }
+            });
+        });
+    });
+</script>

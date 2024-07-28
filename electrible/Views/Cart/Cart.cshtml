@@ -1,0 +1,189 @@
+﻿@model List<dynamic>
+
+@{
+    ViewData["Title"] = "Cart";
+    Layout = "~/Views/Shared/_NewLayout.cshtml";
+}
+
+<!-- Single Page Header start -->
+<div class="container-fluid page-header py-5">
+    <h1 class="text-center text-white display-6">Cart</h1>
+</div>
+<!-- Single Page Header End -->
+<!-- Cart Page Start -->
+<div class="container-fluid py-5">
+    <div class="container py-5">
+        <div class="table-responsive">
+            <table class="table" id="cartTable">
+                <thead>
+                    <tr>
+                        <th scope="col">Products</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Price</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Total</th>
+                        <th scope="col">Handle</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Cart items will be dynamically added here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!-- Cart Page End -->
+
+<div class="row g-4 text-center align-items-center justify-content-center pt-4">
+    <button type="button" class="btn border-secondary py-3 px-4 text-uppercase bg-success w-50 text-white place-order-btn">Place Order</button>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Function to load cart items
+            function loadCartItems() {
+                $.ajax({
+                    url: '/Cart/GetCartItems',
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (data) {
+                        var cartItemsHtml = '';
+                        $.each(data, function (index, item) {
+                            cartItemsHtml += `
+                                        <tr>
+                                            <th scope="row">
+                                                <div class="d-flex align-items-center">
+                                                    <img src="${item.product.imageUrl}" class="img-fluid me-5 rounded-circle" style="width: 80px; height: 80px" alt="" />
+                                                </div>
+                                            </th>
+                                            <td><p class="mb-0 mt-4">${item.product.name}</p></td>
+                                            <td><p class="mb-0 mt-4">${item.product.price}/- Pkr</p></td>
+                                            <td>
+                                                <div class="input-group quantity mt-4" style="width: 100px">
+                                                    <div class="input-group-btn">
+                                                        <button class="btn btn-sm btn-minus rounded-circle bg-light border" data-cart-item-id="${item.cartItemId}">
+                                                            <i class="fa fa-minus"></i>
+                                                        </button>
+                                                    </div>
+                                                    <input type="text" class="form-control form-control-sm text-center border-0 quantity-input" value="${item.quantity}" data-cart-item-id="${item.cartItemId}" />
+                                                    <div class="input-group-btn">
+                                                        <button class="btn btn-sm btn-plus rounded-circle bg-light border" data-cart-item-id="${item.cartItemId}">
+                                                            <i class="fa fa-plus"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td><p class="mb-0 mt-4 total-price">${(item.product.price * item.quantity)}/- Pkr</p></td>
+                                            <td>
+                                                <button class="btn btn-md rounded-circle bg-light border mt-4 remove-from-cart-btn" data-cart-item-id="${item.cartItemId}">
+                                                    <i class="fa fa-times text-danger"></i>
+                                                </button>
+                                            </td>
+                                        </tr>`;
+                        });
+                        $('#cartTable tbody').html(cartItemsHtml);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error(xhr.responseText);
+                    }
+                });
+            }
+
+            // Initial load of cart items
+            loadCartItems();
+
+            // Place order button click handler
+            $('.place-order-btn').click(function () {
+                // Check if cart is empty
+                if ($('#cartTable tbody tr').length === 0) {
+                    alert('Your cart is empty. Please add items before placing an order.');
+                } else {
+                    // Redirect to checkout if cart is not empty
+                    window.location.href = '@Url.Action("Checkout", "Order")';
+                }
+            });
+
+            // Remove from cart button click handler
+            $(document).on('click', '.remove-from-cart-btn', function () {
+                var cartItemId = $(this).data('cart-item-id');
+                $.ajax({
+                    url: '/Cart/RemoveFromCart',
+                    type: 'POST',
+                    data: { cartItemId: cartItemId },
+                    dataType: 'json',
+                    success: function (response) {
+                        if (response.success) {
+                            loadCartItems(); // Reload cart items after successful removal
+                            updateCartItemCount();
+                        } else {
+                            alert('Failed to remove item from cart.');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error(xhr.responseText);
+                        alert('An error occurred while removing item from cart.');
+                    }
+                });
+            });
+
+            // Quantity change button click handlers
+            $(document).on('click', '.btn-minus', function () {
+                var cartItemId = $(this).data('cart-item-id');
+                var input = $(this).closest('.quantity').find('.quantity-input');
+                var newValue = parseInt(input.val()) - 1;
+                if (newValue >= 1) {
+                    input.val(newValue);
+                    updateCartItemQuantity(cartItemId, newValue);
+                    updateCartItemCount()
+                }
+            });
+
+            $(document).on('click', '.btn-plus', function () {
+                var cartItemId = $(this).data('cart-item-id');
+                var input = $(this).closest('.quantity').find('.quantity-input');
+                var newValue = parseInt(input.val()) + 1;
+                input.val(newValue);
+                updateCartItemQuantity(cartItemId, newValue);
+                updateCartItemCount()
+            });
+
+            // Quantity input change handler
+            $(document).on('change', '.quantity-input', function () {
+                var input = $(this);
+                var newValue = parseInt(input.val());
+                if (newValue < 1 || isNaN(newValue)) {
+                    input.val(1);
+                    newValue = 1;
+                }
+                var cartItemId = input.data('cart-item-id');
+                updateCartItemQuantity(cartItemId, newValue);
+                updateCartItemCount()
+            });
+
+            // Update cart item quantity on the server
+            function updateCartItemQuantity(cartItemId, quantity) {
+                $.ajax({
+                    url: '/Cart/UpdateCartItem',
+                    type: 'POST',
+                    data: { cartItemId: cartItemId, quantity: quantity },
+                    dataType: 'json',
+                    success: function (response) {
+                        if (response.success) {
+                            loadCartItems(); // Reload cart items to update prices
+                        } else {
+                            alert('Failed to update cart item quantity.');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error(xhr.responseText);
+                        alert('An error occurred while updating cart item quantity.');
+                    }
+                });
+            }
+
+            
+           
+        });
+    </script>
+}

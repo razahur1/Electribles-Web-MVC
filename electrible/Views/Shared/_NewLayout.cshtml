@@ -1,0 +1,148 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - electrible</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="~/css/StyleSheet.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/electrible.site.css" asp-append-version="true" />
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet" />
+</head>
+<body>
+    <header>
+        <!-- Navbar start -->
+        <div class="container-fluid fixed-top">
+            <div class="container topbar bg-success d-none d-lg-block">
+                <div class="d-flex justify-content-between">
+                    <div class="top-info ps-2">
+                        <small class="me-3"><i class="fas fa-map-marker-alt me-2 text-secondary"></i> <a href=/ class="text-white">14 , Busniess Avenue , Shahr e Faisal , Karachi</a></small>
+                        <small class="me-3"><i class="fas fa-envelope me-2 text-secondary"></i><a href=/ class="text-white">Electribles@xyz.com</a></small>
+                    </div>
+                </div>
+            </div>
+            <div class="container px-0">
+                <nav class="navbar navbar-light bg-white navbar-expand-xl">
+                    <a href=/ class="navbar-brand"><h1 class="text-success display-6">Electribles</h1></a>
+                    <button class="navbar-toggler py-2 px-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                        <span class="fa fa-bars text-success"></span>
+                    </button>
+                    <div class="collapse navbar-collapse bg-white" id="navbarCollapse">
+                        <div class="navbar-nav mx-auto">
+                            <a href=/ class="nav-item nav-link ">Home</a>
+                            <a href="@Url.Action("Shop", "Product")" class="nav-item nav-link">Shop</a>
+
+                            <a href="@Url.Action("Contact", "Home")" class="nav-item nav-link">Contact</a>
+                        </div>
+                    </div>
+                    <div class="d-flex m-3 me-0">
+                        <button class="btn-search btn border border-secondary btn-md-square rounded-circle bg-white me-4" data-bs-toggle="modal" data-bs-target="#searchModal">
+                            <i class="fas fa-search text-success"></i>
+                        </button>
+                        <a href="@Url.Action("Cart", "Cart")" class="position-relative me-4 my-auto">
+                            <i class="fa fa-shopping-bag fa-2x text-success"></i>
+                            <span class="position-absolute bg-secondary rounded-circle d-flex align-items-center justify-content-center text-dark px-1 cart-item-count" style="top: -5px; left: 15px; height: 20px; min-width: 20px;"></span>
+                        </a>
+                        @if (Context.Session.GetString("LoggedInUser") != null)
+                        {
+                            <form asp-action="Logout" asp-controller="User" method="post" class="my-auto">
+                                <button type="submit" class="btn btn-link p-0 m-0 align-baseline text-success"><i class="fas fa-sign-out-alt fa-2x"></i></button>
+                            </form>
+                        }
+                        else
+                        {
+                            <a href="@Url.Action("Login", "User")" class="my-auto">
+                                <i class="fas fa-user fa-2x text-success"></i>
+                            </a>
+                        }
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </header>
+    <!-- Navbar End -->
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+    <!-- Footer Start -->
+    <footer class="bg-success text-white-50 py-5">
+        <div class="container">
+            <div class="pb-4 mb-4" style="border-bottom: 1px solid rgba(226, 175, 24, 0.5);">
+                <div class="row g-4">
+                    <div class="col-lg-3">
+                        <a href= />
+                        <h1 class="text-white mb-0">Electribles</h1>
+                        </a>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="position-relative mx-auto">
+                            <input class="form-control border-0 w-100 py-3 px-4 rounded-pill" type="number" placeholder="Your Email" />
+                            <button type="submit" class="btn btn-success border-0 border-info py-3 px-4 position-absolute rounded-pill text-white" style="top: 0; right: 0;">
+                                Subscribe Now
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="d-flex justify-content-end pt-3">
+                            <a class="btn btn-outline-secondary me-2 btn-md-square rounded-circle text-decoration-none" href=""><i class="fab fa-twitter"></i></a>
+                            <a class="btn btn-outline-secondary me-2 btn-md-square rounded-circle text-decoration-none" href=""><i class="fab fa-facebook-f"></i></a>
+                            <a class="btn btn-outline-secondary me-2 btn-md-square rounded-circle text-decoration-none" href=""><i class="fab fa-youtube"></i></a>
+                            <a class="btn btn-outline-secondary btn-md-square rounded-circle text-decoration-none" href=""><i class="fab fa-linkedin-in"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row g-5">
+                <div class="col-lg-3 col-md-6">
+                    <div class="footer-item">
+                        <h4 class="text-light mb-3">Why People Like us!</h4>
+                        <p class="mb-4">
+                            Because they facilitate interaction with other people. It's the interaction that fascinates them, not the gadgets themselves.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="d-flex flex-column text-start footer-item">
+                        <h4 class="text-light mb-3">Shop Info</h4>
+                        <a class="btn-link text-decoration-none" href="">About Us</a>
+                        <a class="btn-link text-decoration-none" href="">Contact Us</a>
+                        <a class="btn-link text-decoration-none" href="">Privacy Policy</a>
+                        <a class="btn-link text-decoration-none" href="">Terms & Condition</a>
+                        <a class="btn-link text-decoration-none" href="">Return Policy</a>
+                        <a class="btn-link text-decoration-none" href="">FAQs & Help</a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="d-flex flex-column text-start footer-item">
+                        <h4 class="text-light mb-3 text-decoration-none">Account</h4>
+                        <a class="btn-link text-decoration-none" href="">My Account</a>
+                        <a class="btn-link text-decoration-none" href="">Shop details</a>
+                        <a class="btn-link text-decoration-none" href="">Shopping Cart</a>
+                        <a class="btn-link text-decoration-none" href="">Wishlist</a>
+                        <a class="btn-link text-decoration-none" href="">Order History</a>
+                        <a class="btn-link text-decoration-none" href="">International Orders</a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="footer-item">
+                        <h4 class="text-light mb-3">Contact</h4>
+                        <p>Address: 14 , Business Avenue , Shahr e Faisal , Karachi</p>
+                        <p>Payment Accepted</p>
+                        <img src="img/payment.png" class="img-fluid" alt="" />
+                     </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.11/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

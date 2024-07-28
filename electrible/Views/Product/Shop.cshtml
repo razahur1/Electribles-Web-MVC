@@ -1,0 +1,236 @@
+﻿@model IEnumerable<electrible.Models.Product>
+
+@{
+    ViewData["Title"] = "Shop";
+    Layout = "~/Views/Shared/_NewLayout.cshtml";
+}
+
+<!-- Modal Search Start -->
+<div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content rounded-0">
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body d-flex align-items-center">
+                <div class="input-group w-75 mx-auto d-flex">
+                    <input type="search" class="form-control p-3" id="modalSearchInput" aria-describedby="search-icon-1" />
+                    <span id="search-icon-1" class="input-group-text p-3"><i class="fa fa-search"></i></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Search End -->
+<!-- Single Page Header start -->
+<div class="container-fluid page-header py-5">
+    <h1 class="text-center text-white display-6">Shop</h1>
+</div>
+<!-- Single Page Header End -->
+<!-- items Shop Start-->
+<div class="container-fluid fruite py-5">
+    <div class="container py-5">
+        <h1 class="mb-4"></h1>
+        <div class="row g-4">
+            <div class="col-lg-12">
+                <div class="row g-4">
+                    <div class="col-xl-3">
+                        <div class="input-group w-100 mx-auto d-flex">
+                            <input type="search" class="form-control p-3" id="searchInput" aria-describedby="search-icon-1" />
+                            <button id="searchButton" class="input-group-text p-3">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="row g-4">
+                    <div class="col-lg-3">
+                        <div class="row g-4">
+                            <div class="col-lg-12">
+                                <div class="mb-3">
+                                    <h4>Categories</h4>
+                                    <ul class="list-unstyled fruite-categorie" id="categoryList">
+                                        <li>
+                                            <div class="d-flex justify-content-between fruite-name">
+                                                <a href="#" class="category" data-category=""><i class="fas fa-search me-2 text-success"></i>All Products</a>
+                                                <span>(@Model.Count())</span>
+                                            </div>
+                                        </li>
+                                        @foreach (var category in ViewBag.Categories)
+                                        {
+                                            <li>
+                                                <div class="d-flex justify-content-between fruite-name">
+                                                    <a href="#" class="category" data-category="@category.Name"><i class="fas fa-mobile-alt me-2 text-success"></i>@category.Name</a>
+                                                    <span>(@category.Products.Count)</span>
+                                                </div>
+                                            </li>
+                                        }
+                                       </ul>
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="mb-3">
+                                    <h4>Price Range</h4>
+                                    <div class="mb-2">
+                                        <input type="radio" class="me-2 price-range" id="price-1" name="priceRange" value="1000-10000" />
+                                        <label for="price-1">1,000/- to 10,000/-</label>
+                                    </div>
+                                    <div class="mb-2">
+                                        <input type="radio" class="me-2 price-range" id="price-2" name="priceRange" value="10000-30000" />
+                                        <label for="price-2">10,000/- to 30,000/-</label>
+                                    </div>
+                                    <div class="mb-2">
+                                        <input type="radio" class="me-2 price-range" id="price-3" name="priceRange" value="30000-50000" />
+                                        <label for="price-3">30,000/- to 50,000/-</label>
+                                    </div>
+                                    <div class="mb-2">
+                                        <input type="radio" class="me-2 price-range" id="price-4" name="priceRange" value="50000-100000" />
+                                        <label for="price-4">50,000/- to 100,000/-</label>
+                                    </div>
+
+                                    <!-- Add more price range options here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-9">
+                        <div class="row g-4 justify-content-center" id="productContainer">
+                            <!-- Products will be dynamically added here -->
+                            @foreach (var product in Model)
+                            {
+                                <div class="col-md-6 col-lg-6 col-xl-4">
+                                    <div class="rounded position-relative fruite-item">
+                                        <div class="fruite-img">
+                                            <img src="@product.ImageUrl" class="img-fluid w-100 rounded-top" alt="" />
+                                        </div>
+                                        <div class="text-white bg-info px-3 py-1 rounded position-absolute" style="top: 10px; left: 10px;">
+                                            @product.Category.Name
+                                        </div>
+                                        <div class="p-4 border border-info border-top-0 rounded-bottom">
+                                            <a href="/Product/ProductDetails/@product.ProductId"><h4>@product.Name</h4></a>
+                                            <p>@product.Description</p>
+                                            <div class="d-flex justify-content-between flex-lg-wrap">
+                                                <p class="text-dark fs-5 fw-bold mb-0">@product.Price/- Pkr</p>
+                                                <a href="#" class="btn border border-info rounded-pill px-3 text-success add-to-cart" data-product-id="@product.ProductId">
+                                                    <i class="fa fa-shopping-bag me-2 text-success"></i> Add to cart
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- items Shop End-->
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Function to fetch and display products based on filters
+            function fetchProducts(searchTerm = '', category = '', priceRange = '') {
+                $.ajax({
+                    url: '/Product/GetProducts',
+                    type: 'GET',
+                    data: {
+                        searchTerm: searchTerm,
+                        category: category,
+                        priceRange: priceRange,
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        var productsHtml = '';
+                        $.each(data, function (index, product) {
+                            productsHtml += `
+                                        <div class="col-md-6 col-lg-6 col-xl-4">
+                                            <div class="rounded position-relative fruite-item">
+                                                <div class="fruite-img">
+                                                    <img src="${product.imageUrl}" class="img-fluid w-100 rounded-top" alt="" />
+                                                </div>
+                                                <div class="text-white bg-info px-3 py-1 rounded position-absolute" style="top: 10px; left: 10px;">
+                                                    ${product.category}
+                                                </div>
+                                                <div class="p-4 border border-info border-top-0 rounded-bottom">
+                                                    <a href="/Product/ProductDetails/${product.productId}"><h4>${product.name}</h4></a>
+                                                    <p>${product.description}</p>
+                                                    <div class="d-flex justify-content-between flex-lg-wrap">
+                                                        <p class="text-dark fs-5 fw-bold mb-0">${product.price}/- Pkr</p>
+                                                        <a href="#" class="btn border border-info rounded-pill px-3 text-success add-to-cart" data-product-id="${product.productId}">
+                                                            <i class="fa fa-shopping-bag me-2 text-success"></i> Add to cart
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>`;
+                        });
+                        $('#productContainer').html(productsHtml);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error(xhr.responseText);
+                    }
+                });
+            }
+
+            // Initial fetch of products
+            fetchProducts();
+
+            // Search functionality
+            $('#searchButton').click(function () {
+                const searchTerm = $('#searchInput').val();
+                fetchProducts(searchTerm);
+            });
+
+            // Modal search functionality
+            $('#modalSearchInput').on('input', function () {
+                const searchTerm = $(this).val();
+                fetchProducts(searchTerm);
+            });
+
+            // Category filter functionality
+            $('.category').click(function (e) {
+                e.preventDefault();
+                const category = $(this).data('category');
+                fetchProducts('', category);
+            });
+
+            // Price range filter functionality
+            $('.price-range').change(function () {
+                const priceRange = $('input[name="priceRange"]:checked').val();
+                fetchProducts('', '', priceRange);
+            });
+
+            // Add to cart functionality
+            $(document).on('click', '.add-to-cart', function (e) {
+                e.preventDefault();
+                const productId = $(this).data('product-id');
+                $.ajax({
+                    url: '/Cart/AddToCart',
+                    type: 'POST',
+                    data: { productId: productId },
+                    dataType: 'json',
+                    success: function (response) {
+                        if (response.success) {
+                            updateCartItemCount();
+                            alert('Product added to cart successfully.');
+                        } else {
+                            if (response.message) {
+                                alert(response.message);
+                            } else {
+                                alert('Failed to add product to cart.');
+                            }
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error(xhr.responseText);
+                        alert('An error occurred while adding the product to cart.');
+                    }
+                });
+            });
+
+        });
+    </script>
+}
+

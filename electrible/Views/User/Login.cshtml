@@ -1,0 +1,113 @@
+﻿@model electrible.Models.User
+@{
+    ViewData["Title"] = "Login";
+    Layout = "~/Views/Shared/_NewLayout.cshtml";
+}
+
+
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+
+    .topbar {
+        background-color: #28a745;
+    }
+
+        .topbar .container {
+            background-color: transparent; /* Override default container background */
+        }
+
+    .top-info {
+        color: #fff;
+    }
+
+        .top-info a {
+            color: #fff;
+            text-decoration: none;
+        }
+
+            .top-info a:hover {
+                text-decoration: underline;
+            }
+
+    .card {
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        margin-top: 80px;
+    }
+
+    .card-title {
+        font-size: 24px;
+        font-weight: bold;
+    }
+
+    .form-control {
+        border-radius: 5px;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+    }
+</style>
+    <h2>Login</h2>
+<form id="loginForm">
+        <div class="container mt-5">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h3 class="card-title text-center">Login</h3>
+                            <div class="mb-3">
+                                <label for="Username">Username:</label>
+                                <input type="text" id="Username" name="username" class="form-control" />
+                                <span class="text-danger" id="usernameError"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label for="Password">Password:</label>
+                                <input type="Password" id="Password" name="password" class="form-control" />
+                                 <span class="text-danger" id="passwordError"></span>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block w-100 bg-success text-white">Login</button>
+                            <div id="loginError" class="text-danger"></div>
+                        </div>
+                        <div class="text-center mt-3">
+                            <p>Dont Have an Account?  <a href="@Url.Action("Signup", "User")">Signup Now</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#loginForm').on('submit', function (e) {
+            e.preventDefault();
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("Login", "User")',
+                data: $(this).serialize(),
+                success: function (response) {
+                    if (response.success) {
+                        if (response.isAdmin) {
+                            window.location.href = '@Url.Action("Index", "Product")';
+                        } else {
+                            window.location.href = '@Url.Action("Index", "Home")';
+                        }
+                    } else {
+                        $('#loginError').text(response.message);
+                    }
+                },
+                error: function () {
+                    $('#loginError').text('An error occurred. Please try again.');
+                }
+            });
+        });
+    });
+</script>

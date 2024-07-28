@@ -1,0 +1,85 @@
+﻿@model electrible.Models.Product
+
+@{
+    ViewBag.Title = "Product Details";
+    Layout = "~/Views/Shared/_NewLayout.cshtml";
+}
+
+<!-- Single Page Header start -->
+<div class="container-fluid page-header py-5 bg-dark">
+    <h1 class="text-center text-white display-6">Shop Detail</h1>
+</div>
+<!-- Single Page Header End -->
+<!-- Single Product Start -->
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-6 mb-5">
+            <div class="card border-0 rounded shadow-sm">
+                <img id="productImage" src="@Model.ImageUrl" class="card-img-top rounded" alt="Product Image">
+            </div>
+        </div>
+        <div class="col-lg-6 mb-5">
+            <h4 id="productName" class="fw-bold mb-3">@Model.Name</h4>
+            <p id="productCategory" class="mb-3 text-muted">Category: @Model.Category.Name</p>
+            <h5 id="productPrice" class="fw-bold mb-3">Price: @Model.Price</h5>
+
+            <p id="productDescription" class="mb-4">@Model.Description</p>
+            <div class="input-group mb-4" style="width: 150px;">
+                <button id="decrementQuantity" class="btn btn-sm btn-outline-secondary rounded-pill" type="button">
+                    <i class="fa fa-minus"></i>
+                </button>
+                <input id="quantityInput" type="text" class="form-control form-control-sm text-center border-0" value="1">
+                <button id="incrementQuantity" class="btn btn-sm btn-outline-secondary rounded-pill" type="button">
+                    <i class="fa fa-plus"></i>
+                </button>
+            </div>
+            <button id="addToCartBtn" class="btn btn-primary rounded-pill px-4 py-2 mb-4" data-product-id="@Model.ProductId">
+                <i class="fa fa-shopping-bag me-2"></i> Add to cart
+            </button>
+        </div>
+    </div>
+</div>
+<!-- Single Product End -->
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Increment quantity
+            $('#incrementQuantity').click(function () {
+                var currentValue = parseInt($('#quantityInput').val());
+                $('#quantityInput').val(currentValue + 1);
+            });
+
+            // Decrement quantity
+            $('#decrementQuantity').click(function () {
+                var currentValue = parseInt($('#quantityInput').val());
+                if (currentValue > 1) {
+                    $('#quantityInput').val(currentValue - 1);
+                }
+            });
+
+            // Add to cart
+            $('#addToCartBtn').click(function () {
+                var productId = $(this).data('product-id');
+                var quantity = parseInt($('#quantityInput').val());
+
+                $.ajax({
+                    url: '/Cart/AddToCart',
+                    type: 'POST',
+                    data: { productId: productId, quantity: quantity },
+                    success: function (response) {
+                        if (response.success) {
+                            alert('Product added to cart successfully!');
+                            updateCartItemCount();
+                            // You can update the cart count here if needed
+                        } else {
+                            alert('Failed to add product to cart: ' + response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error(xhr.responseText);
+                    }
+                });
+            });
+        });
+    </script>
+}
